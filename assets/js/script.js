@@ -13,14 +13,20 @@ $("#search-button").on("click", function() {
         return;
     }
     else{
-        var histoyBtn = $("<button>").text(userSearchInput); //Creates a button with the user input
-        histoyBtn.addClass("btn");
-        histoyBtn.attr("id", "btnHistory");
-        $("#history").prepend(histoyBtn);
-        
         prevSearches = JSON.parse(localStorage.getItem('prevSearches')) || []; //Saves user search to local storage
-        prevSearches.push(userSearchInput);
-        localStorage.setItem("prevSearches", JSON.stringify(prevSearches));
+        var overwrite = prevSearches.includes(userSearchInput);
+        if (overwrite === false){
+            var histoyBtn = $("<button>").text(userSearchInput); //Creates a button with the user input
+            histoyBtn.addClass("btn");
+            histoyBtn.attr("id", "btnHistory");
+            $("#history").prepend(histoyBtn);
+
+            prevSearches.push(userSearchInput);
+            localStorage.setItem("prevSearches", JSON.stringify(prevSearches));
+        }
+        else{
+           console.log("Search already exists");
+        }
     }
 
     var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+userSearchInput+ "&cnt=41&appid=5d69237f779c6ad1becd9e8ed5e67f08";
