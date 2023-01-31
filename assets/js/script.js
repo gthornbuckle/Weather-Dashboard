@@ -1,6 +1,9 @@
+var prevSearches = JSON.parse(localStorage.getItem("prevSearches")) || [];
+
 $("#search-button").on("click", function() {
 
-     $("#forecast").empty(); //Clears any existing forecast HTML.
+    $("#today").empty(); //Clears any existing forecast HTML.
+     $("#forecast").empty();
 
     var userSearchInput = $("#search-input").val(); //Takes user input
 
@@ -12,6 +15,10 @@ $("#search-button").on("click", function() {
         histoyBtn.addClass("btn");
         histoyBtn.attr("id", "btnHistory");
         $("#history").prepend(histoyBtn);
+        
+        prevSearches = JSON.parse(localStorage.getItem('prevSearches')) || []; //Saves user search to local storage
+        prevSearches.push(userSearchInput);
+        localStorage.setItem("prevSearches", JSON.stringify(prevSearches));
     }
 
     var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+userSearchInput+ "&cnt=41&appid=5d69237f779c6ad1becd9e8ed5e67f08";
@@ -58,8 +65,8 @@ $("#search-button").on("click", function() {
             return tempC.toFixed(1);
         }
 
-        var dailyForecast = $("<div>"); //Creates current day forecast HTML
-        var heading = $("<h3>").text(tempWeatherInfo[0].cityname+ " ("+ moment.unix(tempWeatherInfo[0].currentDate).format("MM/DD/YYYY")+ ")"); //Timestamp converted into date format
+        var dailyForecast = $("<div>").attr("class", "forecastCard"); //Creates current day forecast HTML
+        var heading = $("<h3>").text(tempWeatherInfo[0].cityname+ " ("+ moment.unix(tempWeatherInfo[0].currentDate).format("DD/MM/YYYY")+ ")"); //Timestamp converted into date format
         var icon = $("<img>").attr("src", "http://openweathermap.org/img/wn/"+ tempWeatherInfo[0].iconID+ "@2x.png")
         var temperature = $("<p>").text("Temperature: " + convertTemp(tempWeatherInfo[0].temperature)+ "℃");
         var humidity = $("<p>").text("Humidity: " + tempWeatherInfo[0].humidity+ "%");
@@ -75,8 +82,8 @@ $("#search-button").on("click", function() {
 
         for (var i = 1; i < tempWeatherInfo.length; i++){ //Creates 5 day forecast HTML
 
-            var dailyForecast = $("<div>");
-            var heading = $("<h3>").text(moment.unix(tempWeatherInfo[i].currentDate).format("MM/DD/YYYY"));
+            var dailyForecast = $("<div>").attr("class", "forecastCard");
+            var heading = $("<h3>").text(moment.unix(tempWeatherInfo[i].currentDate).format("DD/MM/YYYY"));
             var icon = $("<img>").attr("src", "http://openweathermap.org/img/wn/"+ tempWeatherInfo[i].iconID+ "@2x.png")
             var temperature = $("<p>").text("Temperature: " + convertTemp(tempWeatherInfo[i].temperature)+ "℃");
             var humidity = $("<p>").text("Humidity: " + tempWeatherInfo[i].humidity+ "%");
@@ -93,3 +100,20 @@ $("#search-button").on("click", function() {
         }
     })
 });
+
+displayPreviousSearches = function(){
+    for (var i = 0; i < prevSearches.length; i++){ //Checks local storage for saved search history
+        
+        var histoyBtn = $("<button>").text(prevSearches[i]);
+        histoyBtn.addClass("btn");
+        histoyBtn.attr("id", "btnHistory");
+        $("#history").prepend(histoyBtn);
+    }
+}
+
+if (prevSearches === undefined || prevSearches.length == 0){ //Checks if any previous search data exists in local storage
+    console.log("No previous searches found.");
+}
+else{
+    displayPreviousSearches();
+}

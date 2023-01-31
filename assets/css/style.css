@@ -6,4 +6,15 @@
 #btnHistory{
     background-color: rgb(111, 140, 167);
     color: rgb(255, 255, 255);
+    margin:5px;
+    padding: 10px;
+}
+
+.forecastCard{
+    background-color: rgb(46, 63, 78);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
 }
