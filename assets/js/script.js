@@ -18,21 +18,33 @@ $("#search-button").on("click", function() {
 
     //     console.log(response);
     //   })
+    var dailyForecast = $("<div>");
+    var heading = $("<h3>").text(weatherInfo[0].city+ " ("+ weatherInfo[0].date+ ")"+ weatherInfo[0].icon);
+    var temperature = $("<p>").text("Temperature: " + weatherInfo[0].temperature);
+    var humidity = $("<p>").text("Humidity: " + weatherInfo[0].humidity);
+    var windspeed = $("<p>").text("Wind Speed: " + weatherInfo[0].windspeed);
 
-    for (var i = 0; i < weatherInfo.length; i++){ //Creates 5 day forecast HTML
+    dailyForecast.append(heading);
+    dailyForecast.append(temperature);
+    dailyForecast.append(humidity);
+    dailyForecast.append(windspeed);
 
-        var currentWeather = $("<div>");
+    $("#today").prepend(dailyForecast);
+
+    for (var i = 1; i < weatherInfo.length; i++){ //Creates 5 day forecast HTML
+
+        var dailyForecast = $("<div>");
         var heading = $("<h3>").text(weatherInfo[i].city+ " ("+ weatherInfo[i].date+ ")"+ weatherInfo[i].icon);
         var temperature = $("<p>").text("Temperature: " + weatherInfo[i].temperature);
         var humidity = $("<p>").text("Humidity: " + weatherInfo[i].humidity);
         var windspeed = $("<p>").text("Wind Speed: " + weatherInfo[i].windspeed);
         
-        currentWeather.append(heading);
-        currentWeather.append(temperature);
-        currentWeather.append(humidity);
-        currentWeather.append(windspeed);
+        dailyForecast.append(heading);
+        dailyForecast.append(temperature);
+        dailyForecast.append(humidity);
+        dailyForecast.append(windspeed);
 
-        $("#forecast").prepend(currentWeather);
+        $("#forecast").prepend(dailyForecast);
 
     }
 });
