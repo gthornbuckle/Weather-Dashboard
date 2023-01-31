@@ -14,7 +14,7 @@ $("#search-button").on("click", function() {
         $("#history").prepend(histoyBtn);
     }
 
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+userSearchInput+ "&appid=5d69237f779c6ad1becd9e8ed5e67f08";
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+userSearchInput+ "&cnt=41&appid=5d69237f779c6ad1becd9e8ed5e67f08";
 
     $.ajax({
         url: queryURL,
@@ -23,47 +23,73 @@ $("#search-button").on("click", function() {
 
         console.log(response);
 
-        // var weatherInfo = [];
-        var dailyWeather = {}; //Creates temp object to store weather data
+        var tempWeatherInfo = []; //Creates temp array to store all weather data
+        var dailyWeather = {}; //Creates temp object to store weather data by day
 
         dailyWeather["cityname"] = response.city.name; //Takes relevant data from API response and appends to object
-        dailyWeather["currentDate"] = moment.unix(response.list[0].dt).format("MM/DD/YYYY");
+        dailyWeather["currentDate"] = response.list[0].dt;
         dailyWeather["iconID"] = response.list[0].weather[0].icon;
         dailyWeather["temperature"] = response.list[0].main.temp;
         dailyWeather["humidity"] = response.list[0].main.humidity;
         dailyWeather["windspeed"] = response.list[0].wind.speed;
 
-        console.log(dailyWeather);
-        
-      })
+        tempWeatherInfo.push(dailyWeather); //Adds weather data to temp array
 
-    var dailyForecast = $("<div>"); //Creates current day forecast HTML
-    var heading = $("<h3>").text(weatherInfo[0].city+ " ("+ moment.unix(weatherInfo[0].date).format("MM/DD/YYYY")+ ")"+ weatherInfo[0].icon); //Timestamp converted into date format
-    var temperature = $("<p>").text("Temperature: " + weatherInfo[0].temperature);
-    var humidity = $("<p>").text("Humidity: " + weatherInfo[0].humidity);
-    var windspeed = $("<p>").text("Wind Speed: " + weatherInfo[0].windspeed);
+        var forecastCount = 7;
 
-    dailyForecast.append(heading);
-    dailyForecast.append(temperature);
-    dailyForecast.append(humidity);
-    dailyForecast.append(windspeed);
+        while (forecastCount < 40){ //Takes data every 24 hours
+            var forecastedWeather = {};
 
-    $("#today").prepend(dailyForecast);
+            forecastedWeather["cityname"] = response.city.name; //Takes relevant data from API response and appends to object
+            forecastedWeather["currentDate"] = response.list[forecastCount].dt;
+            forecastedWeather["iconID"] = response.list[forecastCount].weather[0].icon;
+            forecastedWeather["temperature"] = response.list[forecastCount].main.temp;
+            forecastedWeather["humidity"] = response.list[forecastCount].main.humidity;
+            forecastedWeather["windspeed"] = response.list[forecastCount].wind.speed;
 
-    for (var i = 1; i < weatherInfo.length; i++){ //Creates 5 day forecast HTML
+            forecastCount += 7;
 
-        var dailyForecast = $("<div>");
-        var heading = $("<h3>").text(weatherInfo[i].city+ " ("+ moment.unix(weatherInfo[0].date).format("MM/DD/YYYY")+ ")"+ weatherInfo[i].icon);
-        var temperature = $("<p>").text("Temperature: " + weatherInfo[i].temperature);
-        var humidity = $("<p>").text("Humidity: " + weatherInfo[i].humidity);
-        var windspeed = $("<p>").text("Wind Speed: " + weatherInfo[i].windspeed);
-        
+            tempWeatherInfo.push(forecastedWeather);
+        }
+        console.log(tempWeatherInfo);
+
+        convertTemp = function(tempK){ //Converts temperature from Kelvin to Celcius
+            var tempC = tempK - 273.15;
+            return tempC.toFixed(1);
+        }
+
+        var dailyForecast = $("<div>"); //Creates current day forecast HTML
+        var heading = $("<h3>").text(tempWeatherInfo[0].cityname+ " ("+ moment.unix(tempWeatherInfo[0].currentDate).format("MM/DD/YYYY")+ ")"); //Timestamp converted into date format
+        var icon = $("<img>").attr("src", "http://openweathermap.org/img/wn/"+ tempWeatherInfo[0].iconID+ "@2x.png")
+        var temperature = $("<p>").text("Temperature: " + convertTemp(tempWeatherInfo[0].temperature)+ "℃");
+        var humidity = $("<p>").text("Humidity: " + tempWeatherInfo[0].humidity+ "%");
+        var windspeed = $("<p>").text("Wind Speed: " + tempWeatherInfo[0].windspeed+ "ms");
+
         dailyForecast.append(heading);
+        dailyForecast.append(icon);
         dailyForecast.append(temperature);
         dailyForecast.append(humidity);
         dailyForecast.append(windspeed);
 
-        $("#forecast").prepend(dailyForecast);
+        $("#today").prepend(dailyForecast);
 
-    }
+        for (var i = 1; i < tempWeatherInfo.length; i++){ //Creates 5 day forecast HTML
+
+            var dailyForecast = $("<div>");
+            var heading = $("<h3>").text(moment.unix(tempWeatherInfo[i].currentDate).format("MM/DD/YYYY"));
+            var icon = $("<img>").attr("src", "http://openweathermap.org/img/wn/"+ tempWeatherInfo[i].iconID+ "@2x.png")
+            var temperature = $("<p>").text("Temperature: " + convertTemp(tempWeatherInfo[i].temperature)+ "℃");
+            var humidity = $("<p>").text("Humidity: " + tempWeatherInfo[i].humidity+ "%");
+            var windspeed = $("<p>").text("Wind Speed: " + tempWeatherInfo[i].windspeed+ "ms");
+            
+            dailyForecast.append(heading);
+            dailyForecast.append(icon);
+            dailyForecast.append(temperature);
+            dailyForecast.append(humidity);
+            dailyForecast.append(windspeed);
+
+            $("#forecast").prepend(dailyForecast);
+
+        }
+    })
 });
