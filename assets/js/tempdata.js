@@ -1,7 +1,7 @@
 const weatherInfo = [
     {
         city: "London",
-        date: "31/01/2023",
+        date: 1647345600,
         icon: "🌤",
         temperature: "10C",
         humidity: "40%",
