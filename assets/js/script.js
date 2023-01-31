@@ -1,8 +1,7 @@
 var prevSearches = JSON.parse(localStorage.getItem("prevSearches")) || [];
 var clickedBtn = "";
-var btnText ="";
 
-generateWeatherData = function(btnID) {
+$("#search-button").on("click", function() {
 
     $("#today").empty(); //Clears any existing forecast HTML.
     $("#forecast").empty();
@@ -10,12 +9,8 @@ generateWeatherData = function(btnID) {
     var userSearchInput = $("#search-input").val(); //Takes user input
     
     if (userSearchInput.length === 0){ //Validates if user entered an input
-        if(btnID === "btnHistory"){
-            userSearchInput = btnText;
-        }
-        else{
-            return;
-        }
+    
+        return;
     }
     else{
         var histoyBtn = $("<button>").text(userSearchInput); //Creates a button with the user input
@@ -106,7 +101,7 @@ generateWeatherData = function(btnID) {
 
         }
     })
-};
+});
 
 displayPreviousSearches = function(){
     for (var i = 0; i < prevSearches.length; i++){ //Checks local storage for saved search history
@@ -125,11 +120,7 @@ else{
     displayPreviousSearches();
 }
 
-$("#btnHistory").click(function(){
-    clickedBtn = this.id;
-    btnText = $(this).text();
-    generateWeatherData(clickedBtn);
-});
-
-$("#search-button").on("click", generateWeatherData());
-$("#btnHistory").on("click", generateWeatherData(clickedBtn));
+// $("#btnHistory").click(function(){
+//     btnText = $(this).text();
+//     console.log("Clicked" +btnText);
+// });

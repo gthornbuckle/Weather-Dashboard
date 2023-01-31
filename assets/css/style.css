@@ -10,6 +10,10 @@
     padding: 10px;
 }
 
+#forecast{
+    flex-direction: row-reverse;
+}
+
 .forecastCard{
     background-color: rgb(46, 63, 78);
     color: white;
