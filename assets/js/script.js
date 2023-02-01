@@ -1,33 +1,30 @@
 var prevSearches = JSON.parse(localStorage.getItem("prevSearches")) || [];
 var clickedBtn = "";
+var userSearchInput = "";
 
-$("#search-button").on("click", function() {
+generateWeatherData = function(userSearchInput) {
 
     $("#today").empty(); //Clears any existing forecast HTML.
     $("#forecast").empty();
 
-    var userSearchInput = $("#search-input").val(); //Takes user input
+    // var userSearchInput = $("#search-input").val(); //Takes user input
     
-    if (userSearchInput.length === 0){ //Validates if user entered an input
-    
-        return;
+    prevSearches = JSON.parse(localStorage.getItem('prevSearches')) || []; //Saves user search to local storage
+    var overwrite = prevSearches.includes(userSearchInput);
+
+    if (overwrite === false){
+        var histoyBtn = $("<button>").text(userSearchInput); //Creates a button with the user input
+        histoyBtn.addClass("btnHistory");
+        histoyBtn.attr("data-id", userSearchInput);
+        $("#history").prepend(histoyBtn);
+
+        prevSearches.push(userSearchInput);
+        localStorage.setItem("prevSearches", JSON.stringify(prevSearches));
     }
     else{
-        prevSearches = JSON.parse(localStorage.getItem('prevSearches')) || []; //Saves user search to local storage
-        var overwrite = prevSearches.includes(userSearchInput);
-        if (overwrite === false){
-            var histoyBtn = $("<button>").text(userSearchInput); //Creates a button with the user input
-            histoyBtn.addClass("btn");
-            histoyBtn.attr("id", "btnHistory");
-            $("#history").prepend(histoyBtn);
-
-            prevSearches.push(userSearchInput);
-            localStorage.setItem("prevSearches", JSON.stringify(prevSearches));
-        }
-        else{
-           console.log("Search already exists");
-        }
+        console.log("Search already exists");
     }
+    
 
     var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+userSearchInput+ "&cnt=41&appid=5d69237f779c6ad1becd9e8ed5e67f08";
 
@@ -107,14 +104,13 @@ $("#search-button").on("click", function() {
 
         }
     })
-});
+};
 
 displayPreviousSearches = function(){
     for (var i = 0; i < prevSearches.length; i++){ //Checks local storage for saved search history
         
         var histoyBtn = $("<button>").text(prevSearches[i]);
-        histoyBtn.addClass("btn");
-        histoyBtn.attr("id", "btnHistory");
+        histoyBtn.addClass("btnHistory");
         $("#history").prepend(histoyBtn);
     }
 }
@@ -126,7 +122,13 @@ else{
     displayPreviousSearches();
 }
 
-// $("#btnHistory").click(function(){
-//     btnText = $(this).text();
-//     console.log("Clicked" +btnText);
-// });
+$("#search-button").on("click", function(){
+    var userSearchInput = $("#search-input").val();
+    generateWeatherData(userSearchInput);
+
+});
+
+$(".btnHistory").on("click", function(){
+    var userSearchInput = $(this).text();
+    generateWeatherData(userSearchInput);
+});

@@ -3,8 +3,8 @@
     color: white;
 }
 
-#btnHistory{
-    background-color: rgb(111, 140, 167);
+.btnHistory{
+    background-color: rgb(111, 140, 167) !important; 
     color: rgb(255, 255, 255);
     margin:5px;
     padding: 10px;
